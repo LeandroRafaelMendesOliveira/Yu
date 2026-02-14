@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yu-Gi-Oh! Biblioteca de Cartas</title>
+    <link rel="icon" type="image/png" href="assets/image.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        .ibm-plex-mono-semibold {
+            font-family: "IBM Plex Mono", monospace;
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        :root {
+            --primary-color: #263179;
+            --primary-dark: #000000;
+            --accent-color: #FFD700;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-bg: rgba(255, 255, 255, 0.95);
+            --dark-bg: rgba(0, 0, 0, 0.9);
+            --dark-text: #333;
+            --light-text: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 120px;
+            background-color: #121212;
+            color: var(--light-text);
+        }
+
+        /* Fixed Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(26, 35, 126, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-form input {
+            width: 250px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--light-bg);
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .search-form input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        }
+
+        .search-form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .search-form button:hover {
+            background-color: var(--accent-color);
+            color: var(--dark-text);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* User Section */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--light-text);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .login-btn {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .register-btn {
+            background-color: var(--accent-color);
+            color: var(--dark-text);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 0;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--light-text);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--accent-color);
+        }
+
+        .tab.active {
+            color: var(--accent-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card Grid */
+        .list-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .card {
+            position: relative;
+            margin: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card img {
+            width: 210px;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* Decks Section - Estilos Adicionados */
+        .decks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .create-deck-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: var(--light-text);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            max-width: 300px;
+        }
+
+        .create-deck-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .deck-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .deck-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .deck-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .deck-cards-count {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .deck-cover {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .deck-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-cover {
+            color: var(--light-text);
+            opacity: 0.5;
+            font-size: 0.9rem;
+        }
+
+        .deck-description {
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .deck-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .deck-action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .edit-deck {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+        }
+
+        .delete-deck {
+            background-color: var(--danger-color);
+            color: var(--light-text);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Deck Modal Specific Styles */
+        .deck-modal-content {
+            max-width: 900px;
+        }
+
+        .deck-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .deck-cover-large {
+            width: 200px;
+            height: 280px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .deck-cover-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .deck-details {
+            flex: 1;
+        }
+
+        .deck-details h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .deck-details p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .deck-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(38, 49, 121, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            flex: 1;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: var(--light-text);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .auth-switch a {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .spinner-small {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .pagination-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: var(--accent-color);
+            color: var(--dark-text);
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .pagination-info {
+            color: var(--light-text);
+            font-weight: 600;
+            margin: 0 15px;
+        }
+
+        .cards-count {
+            text-align: center;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading p {
+            margin-top: 15px;
+            color: var(--light-text);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-text);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 160px;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-form {
+                width: 100%;
+            }
+            
+            .search-form input {
+                width: 100%;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+
+            .card img {
+                width: 150px;
+                height: 210px;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 50%;
+            }
+
+            .user-section {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .pagination {
+                flex-wrap: wrap;
+            }
+
+            .deck-info {
+                flex-direction: column;
+            }
+
+            .deck-cover-large {
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+            }
+
+            .deck-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Fixed Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="logo">
+                    <h1>Yu-Gi-Oh! Card Library</h1>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <form class="search-form">
+                        <input id="cardsName" type="text" name="cardName" placeholder="Digite o nome da carta">
+                        <button type="submit">Buscar</button>
+                    </form>
+                    <div class="user-section">
+                        <div class="user-info" id="userInfo" style="display: none;">
+                            <div class="user-avatar" id="userAvatar">U</div>
+                            <span id="userName">Usuário</span>
+                            <button class="auth-btn logout-btn" id="logoutBtn">Sair</button>
+                        </div>
+                        <div class="auth-buttons" id="authButtons">
+                            <button class="auth-btn login-btn" id="loginBtn">Entrar</button>
+                            <button class="auth-btn register-btn" id="registerBtn">Registrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="tabs">
+                <button class="tab active" data-tab="search">Buscar Cartas</button>
+                <button class="tab" data-tab="collection">Minha Coleção</button>
+                <button class="tab" data-tab="decks">Meus Decks</button>
+                <button class="tab" data-tab="about">Sobre</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Tab Content -->
+    <main>
+        <!-- Search Tab -->
+        <section id="search" class="tab-content active">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Buscando cartas...</p>
+            </div>
+            <div class="cards-count" id="cardsCount" style="display: none;"></div>
+            <div class="list-cards" id="searchResults">
+                <div class="empty-state">
+                    <h3>Nenhuma carta encontrada</h3>
+                    <p>Busque por cartas usando o formulário acima</p>
+                </div>
+            </div>
+            <div class="pagination" id="pagination" style="display: none;"></div>
+        </section>
+
+        <!-- Collection Tab -->
+        <section id="collection" class="tab-content">
+            <div class="empty-state" id="collectionEmpty">
+                <h3>Sua coleção está vazia</h3>
+                <p>Busque por cartas e adicione-as à sua coleção</p>
+            </div>
+            <div class="list-cards" id="collectionCards" style="display: none;"></div>
+        </section>
+
+        <!-- Decks Tab Atualizada -->
+        <section id="decks" class="tab-content">
+            <div class="decks-container">
+                <div class="empty-state" id="decksEmpty">
+                    <h3>Nenhum deck criado ainda</h3>
+                    <p>Crie seu primeiro deck para começar a duelar!</p>
+                    <button class="create-deck-btn" id="createDeckBtn">
+                        <span>+</span> Criar Primeiro Deck
+                    </button>
+                </div>
+                <div class="deck-grid" id="deckGrid" style="display: none;"></div>
+            </div>
+        </section>
+
+        <!-- About Tab -->
+        <section id="about" class="tab-content">
+            <div style="max-width: 800px; margin: 0 auto; padding: 20px; background-color: rgba(0,0,0,0.5); border-radius: 10px;">
+                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Sobre a Biblioteca de Cartas Yu-Gi-Oh!</h2>
+                <p style="line-height: 1.6; margin-bottom: 15px;">
+                    Bem-vindo à Biblioteca de Cartas Yu-Gi-Oh!, seu recurso digital definitivo para explorar o vasto mundo das cartas de Yu-Gi-Oh!
+                </p>
+                <p style="line-height: 1.6; margin-bottom: 15px;">
+                    Esta aplicação permite que você:
+                </p>
+                <ul style="line-height: 1.6; margin-bottom: 15px; padding-left: 20px;">
+                    <li>Busque por qualquer carta de Yu-Gi-Oh! pelo nome</li>
+                    <li>Veja informações detalhadas sobre cada carta</li>
+                    <li>Construa e gerencie sua coleção pessoal de cartas</li>
+                    <li>Crie e organize decks personalizados</li>
+                </ul>
+                <p style="line-height: 1.6;">
+                    Todos os dados das cartas são obtidos da API oficial de Yu-Gi-Oh!. Comece buscando por suas cartas favoritas acima!
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Entrar na Conta</h2>  
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">E-mail</label>
+                        <input type="email" id="loginEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Senha</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="loginSubmitBtn">
+                            <span id="loginBtnText">Entrar</span>
+                            <div class="spinner spinner-small" id="loginSpinner" style="display: none;"></div>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="closeLoginModal">Cancelar</button>
+                    </div>
+                </form>
+                <div class="auth-switch">
+                    Não tem uma conta? <a id="switchToRegister">Registre-se</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Conta</h2>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">Nome</label>
+                        <input type="text" id="registerName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">E-mail</label>
+                        <input type="email" id="registerEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Senha</label>
+                        <input type="password" id="registerPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Confirmar Senha</label>
+                        <input type="password" id="registerConfirmPassword" class="form-control" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="registerSubmitBtn">
+                            <span id="registerBtnText">Registrar</span>
+                            <div class="spinner spinner-small" id="registerSpinner" style="display: none;"></div>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="closeRegisterModal">Cancelar</button>
+                    </div>
+                </form>
+                <div class="auth-switch">
+                    Já tem uma conta? <a id="switchToLogin">Entre aqui</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Details Modal -->
+    <div class="modal" id="cardModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalCardName">Nome da Carta</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: flex; gap: 20px;">
+                        <div class="modal-image">
+                            <img id="modalCardImage" src="" alt="Imagem da Carta" style="max-width: 250px;">
+                        </div>
+                        <div class="modal-details">
+                            <div class="detail-item">
+                                <strong>Tipo:</strong>
+                                <span id="modalCardType" class="card-type"></span>
+                            </div>
+                            <div class="detail-item">
+                                <strong>Atributo:</strong>
+                                <span id="modalCardAttribute"></span>
+                            </div>
+                            <div class="detail-item">
+                                <strong>Nível/Rank:</strong>
+                                <span id="modalCardLevel"></span>
+                            </div>
+                            <div class="detail-item">
+                                <strong>Raça:</strong>
+                                <span id="modalCardRace"></span>
+                            </div>
+                            <div class="detail-item">
+                                <strong>ATK/DEF:</strong>
+                                <span id="modalCardAtkDef"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="detail-item">
+                            <strong>Descrição:</strong>
+                        </div>
+                        <div class="card-description" id="modalCardDescription">
+                            A descrição da carta aparecerá aqui.
+                        </div>
+                        <div class="form-actions" style="margin-top: 15px;">
+                            <button class="btn btn-primary" id="addToCollectionBtn">Adicionar à Coleção</button>
+                            <button class="btn btn-secondary" id="addToDeckBtn">Adicionar ao Deck</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deck Details Modal (Adicionado) -->
+    <div class="modal" id="deckModal">
+        <div class="modal-content deck-modal-content">
+            <div class="modal-header">
+                <h2 id="deckModalTitle">Detalhes do Deck</h2>
+                <button class="close-btn" id="closeDeckModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="deck-info">
+                    <div class="deck-cover-large" id="deckCoverLarge">
+                        <!-- Deck cover image will be inserted here -->
+                    </div>
+                    <div class="deck-details">
+                        <h3 id="deckModalName">Nome do Deck</h3>
+                        <p id="deckModalDescription">Descrição do deck aparecerá aqui.</p>
+                        <div class="deck-stats">
+                            <div class="stat-item">
+                                <div class="stat-label">Total de Cartas</div>
+                                <div class="stat-value" id="deckTotalCards">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Monstros</div>
+                                <div class="stat-value" id="deckMonsters">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Magias</div>
+                                <div class="stat-value" id="deckSpells">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Armadilhas</div>
+                                <div class="stat-value" id="deckTraps">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cards-count" id="deckCardsCount"></div>
+                <div class="list-cards" id="deckCardsGrid"></div>
+                <div class="pagination" id="deckPagination" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Element references
+            const searchForm = document.querySelector('.search-form');
+            const cardsNameInput = document.getElementById('cardsName');
+            const searchResults = document.getElementById('searchResults');
+            const loading = document.querySelector('.loading');
+            const emptyState = searchResults.querySelector('.empty-state');
+            const cardsCount = document.getElementById('cardsCount');
+            const pagination = document.getElementById('pagination');
+            
+            // Modal elements
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+            const cardModal = document.getElementById('cardModal');
+            
+            // Auth elements
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userInfo = document.getElementById('userInfo');
+            const authButtons = document.getElementById('authButtons');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            
+            // Spinner elements
+            const loginSpinner = document.getElementById('loginSpinner');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+            const registerSpinner = document.getElementById('registerSpinner');
+            const registerBtnText = document.getElementById('registerBtnText');
+            const registerSubmitBtn = document.getElementById('registerSubmitBtn');
+            
+            // Deck elements
+            const createDeckBtn = document.getElementById('createDeckBtn');
+            const decksEmpty = document.getElementById('decksEmpty');
+            const deckGrid = document.getElementById('deckGrid');
+            
+            // Deck Modal elements
+            const deckModal = document.getElementById('deckModal');
+            const closeDeckModal = document.getElementById('closeDeckModal');
+            const deckModalTitle = document.getElementById('deckModalTitle');
+            const deckModalName = document.getElementById('deckModalName');
+            const deckModalDescription = document.getElementById('deckModalDescription');
+            const deckCoverLarge = document.getElementById('deckCoverLarge');
+            const deckTotalCards = document.getElementById('deckTotalCards');
+            const deckMonsters = document.getElementById('deckMonsters');
+            const deckSpells = document.getElementById('deckSpells');
+            const deckTraps = document.getElementById('deckTraps');
+            const deckCardsCount = document.getElementById('deckCardsCount');
+            const deckCardsGrid = document.getElementById('deckCardsGrid');
+            const deckPagination = document.getElementById('deckPagination');
+            
+            // Close buttons
+            const closeLoginModal = document.getElementById('closeLoginModal');
+            const closeRegisterModal = document.getElementById('closeRegisterModal');
+            const closeCardModal = document.querySelector('#cardModal .close-btn');
+            
+            // Switch auth modals
+            const switchToRegister = document.getElementById('switchToRegister');
+            const switchToLogin = document.getElementById('switchToLogin');
+            
+            // Forms
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            // Card modal elements
+            const modalCardName = document.getElementById('modalCardName');
+            const modalCardImage = document.getElementById('modalCardImage');
+            const modalCardType = document.getElementById('modalCardType');
+            const modalCardAttribute = document.getElementById('modalCardAttribute');
+            const modalCardLevel = document.getElementById('modalCardLevel');
+            const modalCardRace = document.getElementById('modalCardRace');
+            const modalCardAtkDef = document.getElementById('modalCardAtkDef');
+            const modalCardDescription = document.getElementById('modalCardDescription');
+            const addToCollectionBtn = document.getElementById('addToCollectionBtn');
+            const addToDeckBtn = document.getElementById('addToDeckBtn');
+            
+            // App state
+            let currentUser = null;
+            let allCards = [];
+            let currentCard = null;
+            let currentDeck = null;
+            let currentDeckCards = [];
+            let currentPage = 1;
+            let currentDeckPage = 1;
+            const cardsPerPage = 12;
+            const deckCardsPerPage = 12;
+            
+            // Check if user is logged in (from localStorage)
+            function checkAuthStatus() {
+                const user = localStorage.getItem('currentUser');
+                if (user) {
+                    currentUser = JSON.parse(user);
+                    updateUIForLoggedInUser();
+                }
+            }
+            
+            // Update UI for logged in user - CORRIGIDA
+            async function updateUIForLoggedInUser() {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                const token = localStorage.getItem('token');
+                
+                if (!user || !token) {
+                    console.log('Usuário não logado ou token não encontrado');
+                    return;
+                }
+                
+                userInfo.style.display = 'flex';
+                authButtons.style.display = 'none';
+                userName.textContent = user.username || user.name;
+                userAvatar.textContent = (user.username || user.name).charAt(0).toUpperCase();
+                
+                // Load user's decks from API
+                try {
+                    const response = await fetch('http://localhost:3000/decks/my-decks', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Resposta da API de decks:', data);
+                        
+                        // CORREÇÃO: Extrair os decks da propriedade 'data' do objeto de resposta
+                        let decks = [];
+                        
+                        if (data.data && Array.isArray(data.data)) {
+                            // Formato: {success: true, message: '...', data: [...], count: n}
+                            decks = data.data;
+                        } else if (data.decks && Array.isArray(data.decks)) {
+                            // Formato alternativo: {success: true, message: '...', decks: [...], count: n}
+                            decks = data.decks;
+                        } else if (Array.isArray(data)) {
+                            // Formato direto: [...]
+                            decks = data;
+                        } else {
+                            console.error('Formato inesperado de dados dos decks:', data);
+                        }
+                        
+                        console.log('Decks processados:', decks);
+                        loadUserDecks(decks);
+                    } else {
+                        console.error('Erro ao carregar decks da API:', response.status);
+                        loadUserDecksFromLocalStorage();
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar decks:', error);
+                    loadUserDecksFromLocalStorage();
+                }
+            }
+            
+            // Fallback para carregar decks do localStorage
+            function loadUserDecksFromLocalStorage() {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (!user) return;
+                
+                const userDecks = JSON.parse(localStorage.getItem(`decks_${user.id}`)) || [];
+                console.log('Decks carregados do localStorage:', userDecks);
+                loadUserDecks(userDecks);
+            }
+            
+            // Update UI for logged out user
+            function updateUIForLoggedOutUser() {
+                userInfo.style.display = 'none';
+                authButtons.style.display = 'flex';
+                decksEmpty.style.display = 'block';
+                deckGrid.style.display = 'none';
+            }
+            
+            // Load user's decks
+            function loadUserDecks(decks) {
+                console.log('Carregando decks (função loadUserDecks):', decks);
+                
+                if (!decks || !Array.isArray(decks) || decks.length === 0) {
+                    decksEmpty.style.display = 'block';
+                    deckGrid.style.display = 'none';
+                } else {
+                    decksEmpty.style.display = 'none';
+                    deckGrid.style.display = 'grid';
+                    renderDecks(decks);
+                }
+            }
+            
+            // Render decks with cover images - ATUALIZADA
+            function renderDecks(decks) {
+                deckGrid.innerHTML = '';
+                
+                decks.forEach(deck => {
+                    const deckCard = document.createElement('div');
+                    deckCard.className = 'deck-card';
+                    deckCard.setAttribute('data-deck-id', deck.id || deck._id);
+                    
+                    // Get cover image (first card in deck)
+                    let coverImage = '';
+                    let coverAlt = 'Sem imagem';
+                    let cardCount = 0;
+                    
+                    // Verificar estrutura do deck
+                    if (deck.deck_cards && Array.isArray(deck.deck_cards)) {
+                        // Estrutura da API: deck.deck_cards
+                        cardCount = deck.deck_cards.reduce((sum, card) => sum + (card.quantity || 1), 0);
+                        if (deck.deck_cards.length > 0 && deck.deck_cards[0].card) {
+                            coverImage = deck.deck_cards[0].card.card_images?.[0]?.image_url || '';
+                            coverAlt = deck.deck_cards[0].card.name || 'Carta';
+                        }
+                    } else if (deck.main && Array.isArray(deck.main)) {
+                        // Estrutura antiga: deck.main
+                        cardCount = deck.main.length;
+                        if (deck.main.length > 0 && deck.main[0].card_images) {
+                            coverImage = deck.main[0].card_images[0].image_url || '';
+                            coverAlt = deck.main[0].name || 'Carta';
+                        }
+                    } else {
+                        // Se não houver estrutura conhecida, tenta usar propriedades diretas
+                        cardCount = deck.card_count || 0;
+                    }
+                    
+                    deckCard.innerHTML = `
+                        <div class="deck-cover">
+                            ${coverImage ? 
+                                `<img src="${coverImage}" alt="${coverAlt}" loading="lazy">` : 
+                                `<div class="no-cover">Sem imagem de capa</div>`
+                            }
+                        </div>
+                        <div class="deck-header">
+                            <div class="deck-name">${deck.name || 'Deck sem nome'}</div>
+                            <div class="deck-cards-count">${cardCount} cartas</div>
+                        </div>
+                        <div class="deck-description">
+                            ${deck.description || 'Sem descrição'}
+                        </div>
+                        <div class="deck-actions">
+                            <button class="deck-action-btn edit-deck" data-deck-id="${deck.id || deck._id}">Editar</button>
+                            <button class="deck-action-btn delete-deck" data-deck-id="${deck.id || deck._id}">Excluir</button>
+                        </div>
+                    `;
+                    deckGrid.appendChild(deckCard);
+                    
+                    // Add click event to deck card (to open modal)
+                    deckCard.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('deck-action-btn')) {
+                            showDeckModal(deck);
+                        }
+                    });
+                });
+                
+                // Add event listeners for deck action buttons
+                document.querySelectorAll('.edit-deck').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const deckId = this.getAttribute('data-deck-id');
+                        // Redirect to build deck page
+                        window.location.href = `build-deck.html?deck=${deckId}`;
+                    });
+                });
+                
+                document.querySelectorAll('.delete-deck').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const deckId = this.getAttribute('data-deck-id');
+                        deleteDeck(deckId);
+                    });
+                });
+            }
+            
+            // Show deck modal with all cards - ATUALIZADA
+            function showDeckModal(deck) {
+                currentDeck = deck;
+                currentDeckPage = 1;
+                
+                // Set modal title and basic info
+                deckModalTitle.textContent = deck.name || 'Deck sem nome';
+                deckModalName.textContent = deck.name || 'Deck sem nome';
+                deckModalDescription.textContent = deck.description || 'Este deck não possui descrição.';
+                
+                // Processar cartas do deck
+                currentDeckCards = [];
+                
+                if (deck.deck_cards && Array.isArray(deck.deck_cards)) {
+                    // Estrutura da API: deck.deck_cards
+                    deck.deck_cards.forEach(deckCard => {
+                        if (deckCard.card) {
+                            for (let i = 0; i < (deckCard.quantity || 1); i++) {
+                                currentDeckCards.push(deckCard.card);
+                            }
+                        }
+                    });
+                } else if (deck.main && Array.isArray(deck.main)) {
+                    // Estrutura antiga: deck.main
+                    currentDeckCards = deck.main;
+                }
+                
+                // Set cover image
+                let coverImageHTML = '<div class="no-cover">Sem imagem de capa</div>';
+                if (currentDeckCards.length > 0 && currentDeckCards[0].card_images) {
+                    coverImageHTML = `<img src="${currentDeckCards[0].card_images[0].image_url}" alt="${currentDeckCards[0].name}" loading="lazy">`;
+                }
+                deckCoverLarge.innerHTML = coverImageHTML;
+                
+                // Calculate deck statistics
+                const stats = calculateDeckStatistics(currentDeckCards);
+                deckTotalCards.textContent = stats.total;
+                deckMonsters.textContent = stats.monsters;
+                deckSpells.textContent = stats.spells;
+                deckTraps.textContent = stats.traps;
+                
+                // Show cards count
+                deckCardsCount.textContent = `${stats.total} cartas no deck`;
+                
+                // Render deck cards
+                renderDeckPage(currentDeckPage);
+                
+                // Show the modal
+                deckModal.style.display = 'flex';
+            }
+            
+            // Calculate deck statistics
+            function calculateDeckStatistics(cards) {
+                const stats = {
+                    total: cards.length,
+                    monsters: 0,
+                    spells: 0,
+                    traps: 0
+                };
+                
+                cards.forEach(card => {
+                    if (card.type && card.type.toLowerCase().includes('monster')) {
+                        stats.monsters++;
+                    } else if (card.type && card.type.toLowerCase().includes('spell')) {
+                        stats.spells++;
+                    } else if (card.type && card.type.toLowerCase().includes('trap')) {
+                        stats.traps++;
+                    }
+                });
+                
+                return stats;
+            }
+            
+            // Render deck cards with pagination
+            function renderDeckPage(page) {
+                currentDeckPage = page;
+                const startIndex = (page - 1) * deckCardsPerPage;
+                const endIndex = startIndex + deckCardsPerPage;
+                const pageCards = currentDeckCards.slice(startIndex, endIndex);
+                const totalPages = Math.ceil(currentDeckCards.length / deckCardsPerPage);
+                
+                // Clear previous cards
+                deckCardsGrid.innerHTML = '';
+                
+                // Create card elements
+                pageCards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.classList.add('card');
+                    
+                    const imageCard = document.createElement('img');
+                    imageCard.src = card.card_images?.[0]?.image_url || '';
+                    imageCard.alt = card.name || 'Carta';
+                    imageCard.loading = 'lazy';
+                    
+                    cardElement.appendChild(imageCard);
+                    deckCardsGrid.appendChild(cardElement);
+                    
+                    // Add click event to show card details modal
+                    cardElement.addEventListener('click', function () {
+                        showCardModal(card);
+                    });
+                });
+                
+                // Render pagination if needed
+                if (currentDeckCards.length > deckCardsPerPage) {
+                    renderDeckPagination(totalPages);
+                } else {
+                    deckPagination.style.display = 'none';
+                }
+            }
+            
+            // Render pagination for deck modal
+            function renderDeckPagination(totalPages) {
+                deckPagination.style.display = 'flex';
+                deckPagination.innerHTML = '';
+                
+                // Previous button
+                const prevButton = document.createElement('button');
+                prevButton.className = 'pagination-btn';
+                prevButton.innerHTML = '&laquo; Anterior';
+                prevButton.disabled = currentDeckPage === 1;
+                prevButton.addEventListener('click', () => {
+                    renderDeckPage(currentDeckPage - 1);
+                });
+                deckPagination.appendChild(prevButton);
+                
+                // Page info
+                const pageInfo = document.createElement('span');
+                pageInfo.className = 'pagination-info';
+                pageInfo.textContent = `Página ${currentDeckPage} de ${totalPages}`;
+                deckPagination.appendChild(pageInfo);
+                
+                // Next button
+                const nextButton = document.createElement('button');
+                nextButton.className = 'pagination-btn';
+                nextButton.innerHTML = 'Próxima &raquo;';
+                nextButton.disabled = currentDeckPage === totalPages;
+                nextButton.addEventListener('click', () => {
+                    renderDeckPage(currentDeckPage + 1);
+                });
+                deckPagination.appendChild(nextButton);
+            }
+            
+            // Delete deck
+            async function deleteDeck(deckId) {
+                if (confirm('Tem certeza que deseja excluir este deck?')) {
+                    try {
+                        const token = localStorage.getItem('token');
+                        const response = await fetch(`http://localhost:3000/decks/${deckId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
+
+                        if (response.ok) {
+                            // Atualizar a lista de decks
+                            await updateUIForLoggedInUser();
+                            
+                            // Close deck modal if it's open for this deck
+                            if (currentDeck && (currentDeck.id === deckId || currentDeck._id === deckId)) {
+                                deckModal.style.display = 'none';
+                            }
+                            
+                            alert('Deck excluído com sucesso!');
+                        } else {
+                            alert('Erro ao excluir o deck. Tente novamente.');
+                        }
+                    } catch (error) {
+                        console.error('Erro ao excluir deck:', error);
+                        alert('Erro ao excluir o deck. Tente novamente.');
+                    }
+                }
+            }
+            
+            // Create a new deck
+            function createNewDeck() {
+                if (!currentUser) {
+                    alert('Você precisa estar logado para criar um deck!');
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+                
+                // Redirecionar para a página de construção de deck
+                window.location.href = 'build-deck.html';
+            }
+            
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show active tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        }
+                    });
+                    
+                    // Load decks when decks tab is activated
+                    if (tabId === 'decks') {
+                        const user = JSON.parse(localStorage.getItem('currentUser'));
+                        if (user) {
+                            updateUIForLoggedInUser();
+                        }
+                    }
+                });
+            });
+
+            // Handle form submission
+            searchForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                currentPage = 1;
+                BuscarCardApi();
+            });
+
+            // Auth button event listeners
+            loginBtn.addEventListener('click', function() {
+                loginModal.style.display = 'flex';
+            });
+            
+            registerBtn.addEventListener('click', function() {
+                registerModal.style.display = 'flex';
+            });
+            
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('token');
+                currentUser = null;
+                updateUIForLoggedOutUser();
+            });
+            
+            // Create deck button
+            createDeckBtn.addEventListener('click', createNewDeck);
+            
+            // Close modal event listeners
+            closeLoginModal.addEventListener('click', function() {
+                loginModal.style.display = 'none';
+            });
+            
+            closeRegisterModal.addEventListener('click', function() {
+                registerModal.style.display = 'none';
+            });
+            
+            closeCardModal.addEventListener('click', function() {
+                cardModal.style.display = 'none';
+            });
+            
+            closeDeckModal.addEventListener('click', function() {
+                deckModal.style.display = 'none';
+            });
+            
+            // Switch between auth modals
+            switchToRegister.addEventListener('click', function() {
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'flex';
+            });
+            
+            switchToLogin.addEventListener('click', function() {
+                registerModal.style.display = 'none';
+                loginModal.style.display = 'flex';
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function (event) {
+                if (event.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
+                if (event.target === registerModal) {
+                    registerModal.style.display = 'none';
+                }
+                if (event.target === cardModal) {
+                    cardModal.style.display = 'none';
+                }
+                if (event.target === deckModal) {
+                    deckModal.style.display = 'none';
+                }
+            });
+            
+            // Show loading state for login
+            function showLoginLoading() {
+                loginBtnText.style.display = 'none';
+                loginSpinner.style.display = 'block';
+                loginSubmitBtn.disabled = true;
+            }
+            
+            // Hide loading state for login
+            function hideLoginLoading() {
+                loginBtnText.style.display = 'block';
+                loginSpinner.style.display = 'none';
+                loginSubmitBtn.disabled = false;
+            }
+            
+            // Show loading state for register
+            function showRegisterLoading() {
+                registerBtnText.style.display = 'none';
+                registerSpinner.style.display = 'block';
+                registerSubmitBtn.disabled = true;
+            }
+            
+            // Hide loading state for register
+            function hideRegisterLoading() {
+                registerBtnText.style.display = 'block';
+                registerSpinner.style.display = 'none';
+                registerSubmitBtn.disabled = false;
+            }
+            
+            // Login form submission
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                showLoginLoading();
+                
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                try {
+                    const response = await fetch('http://localhost:3000/users/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        const user = result.user;
+                        
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        localStorage.setItem('token', result.token);
+                        currentUser = user;
+                        
+                        // Fechar modal e resetar formulário
+                        loginModal.style.display = 'none';
+                        loginForm.reset();
+                        updateUIForLoggedInUser();
+                        
+                        alert('Login realizado com sucesso!');
+                    } else {
+                        const error = await response.json();
+                        alert(error.message || 'E-mail ou senha incorretos!');
+                    }
+                } catch (error) {
+                    console.error('Erro no login:', error);
+                    alert('Erro no login. Por favor, tente novamente.');
+                }
+                
+                hideLoginLoading();
+            });
+            
+            // Register form submission
+            registerForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                showRegisterLoading();
+                
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    alert('As senhas não coincidem!');
+                    hideRegisterLoading();
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('http://localhost:3000/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: name,
+                            email: email,
+                            password: password,
+                            role: 'user'
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert('Conta criada com sucesso! Por favor, faça o login.');
+                        registerModal.style.display = 'none';
+                        registerForm.reset();
+                        // Mostrar modal de login automaticamente
+                        loginModal.style.display = 'flex';
+                    } else {
+                        const error = await response.json();
+                        alert(error.message || 'Erro ao registrar usuário. Tente novamente.');
+                    }
+                } catch (error) {
+                    console.error('Erro no registro:', error);
+                    alert('Erro ao criar conta. Tente novamente.');
+                } finally {
+                    hideRegisterLoading();
+                }
+            });
+            
+            // Add to collection button
+            addToCollectionBtn.addEventListener('click', function() {
+                if (!currentUser) {
+                    alert('Você precisa estar logado para adicionar cartas à sua coleção!');
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+                
+                if (currentCard) {
+                    const user = JSON.parse(localStorage.getItem('currentUser'));
+                    const userCollection = JSON.parse(localStorage.getItem(`collection_${user.id}`)) || [];
+                    
+                    // Check if card is already in collection
+                    if (!userCollection.find(card => card.id === currentCard.id)) {
+                        userCollection.push(currentCard);
+                        localStorage.setItem(`collection_${user.id}`, JSON.stringify(userCollection));
+                        alert('Carta adicionada à sua coleção!');
+                    } else {
+                        alert('Esta carta já está na sua coleção!');
+                    }
+                }
+            });
+            
+            // Add to deck button
+            addToDeckBtn.addEventListener('click', function() {
+                if (!currentUser) {
+                    alert('Você precisa estar logado para adicionar cartas aos seus decks!');
+                    loginModal.style.display = 'flex';
+                    return;
+                }
+                
+                if (currentCard) {
+                    const user = JSON.parse(localStorage.getItem('currentUser'));
+                    const userDecks = JSON.parse(localStorage.getItem(`decks_${user.id}`)) || [];
+                    
+                    if (userDecks.length === 0) {
+                        if (confirm('Você não tem nenhum deck. Deseja criar um novo deck?')) {
+                            createNewDeck();
+                        }
+                    } else {
+                        // In a real implementation, you would show a modal to select which deck to add to
+                        alert('Selecione um deck para adicionar esta carta (funcionalidade a ser implementada)');
+                    }
+                }
+            });
+
+            // Função para buscar cartas
+            async function BuscarCardApi() {
+                const cardsName = cardsNameInput.value.trim();
+
+                if (!cardsName) {
+                    alert('Por favor, digite o nome de uma carta');
+                    return;
+                }
+
+                // Show loading state
+                loading.style.display = 'block';
+                emptyState.style.display = 'none';
+                cardsCount.style.display = 'none';
+                pagination.style.display = 'none';
+                searchResults.innerHTML = '';
+
+                try {
+                    const response = await fetch(`http://localhost:3000/cards/name/${encodeURIComponent(cardsName)}`);
+
+                    if (!response.ok) {
+                        throw new Error('Carta não encontrada');
+                    }
+
+                    const data = await response.json();
+
+                    // Hide loading state
+                    loading.style.display = 'none';
+
+                    if (!data || data.length === 0) {
+                        emptyState.style.display = 'block';
+                        emptyState.innerHTML = `
+                            <h3>Nenhuma carta encontrada</h3>
+                            <p>Nenhuma carta encontrada para "${cardsName}"</p>
+                        `;
+                        return;
+                    }
+
+                    // Store all cards
+                    allCards = data;
+
+                    // Show cards count
+                    cardsCount.style.display = 'block';
+                    cardsCount.textContent = `${data.length} cartas encontradas`;
+
+                    // Render first page
+                    renderPage(1);
+
+                } catch (error) {
+                    console.error('Erro ao buscar dados da carta:', error);
+                    loading.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    emptyState.innerHTML = `
+                        <h3>Erro</h3>
+                        <p>${error.message}</p>
+                    `;
+                }
+            }
+
+            // Função para renderizar página de cartas
+            function renderPage(page) {
+                currentPage = page;
+                const startIndex = (page - 1) * cardsPerPage;
+                const endIndex = startIndex + cardsPerPage;
+                const pageCards = allCards.slice(startIndex, endIndex);
+                const totalPages = Math.ceil(allCards.length / cardsPerPage);
+
+                // Clear previous results
+                searchResults.innerHTML = '';
+
+                // Create card elements
+                pageCards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.classList.add('card');
+
+                    const imageCard = document.createElement('img');
+                    imageCard.src = card.card_images[0].image_url;
+                    imageCard.alt = card.name;
+                    imageCard.loading = 'lazy';
+
+                    cardElement.appendChild(imageCard);
+                    searchResults.appendChild(cardElement);
+
+                    // Add click event to show modal with card details
+                    cardElement.addEventListener('click', function () {
+                        showCardModal(card);
+                    });
+                });
+
+                // Render pagination if needed
+                if (allCards.length > cardsPerPage) {
+                    renderPagination(totalPages);
+                } else {
+                    pagination.style.display = 'none';
+                }
+            }
+
+            // Função para renderizar paginação
+            function renderPagination(totalPages) {
+                pagination.style.display = 'flex';
+                pagination.innerHTML = '';
+
+                // Previous button
+                const prevButton = document.createElement('button');
+                prevButton.className = 'pagination-btn';
+                prevButton.innerHTML = '&laquo; Anterior';
+                prevButton.disabled = currentPage === 1;
+                prevButton.addEventListener('click', () => renderPage(currentPage - 1));
+                pagination.appendChild(prevButton);
+
+                // Page info
+                const pageInfo = document.createElement('span');
+                pageInfo.className = 'pagination-info';
+                pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+                pagination.appendChild(pageInfo);
+
+                // Next button
+                const nextButton = document.createElement('button');
+                nextButton.className = 'pagination-btn';
+                nextButton.innerHTML = 'Próxima &raquo;';
+                nextButton.disabled = currentPage === totalPages;
+                nextButton.addEventListener('click', () => renderPage(currentPage + 1));
+                pagination.appendChild(nextButton);
+            }
+
+            // Função para mostrar modal da carta
+            function showCardModal(card) {
+                // Store current card
+                currentCard = card;
+                
+                // Set modal content
+                modalCardName.textContent = card.name;
+                modalCardImage.src = card.card_images[0].image_url;
+                modalCardType.textContent = card.type;
+                
+                // Set additional details if available
+                modalCardAttribute.textContent = card.attribute || 'N/A';
+                modalCardLevel.textContent = card.level || card.rank || 'N/A';
+                modalCardRace.textContent = card.race || 'N/A';
+
+                // Format ATK/DEF
+                let atkDef = '';
+                if (card.atk !== undefined) atkDef += `ATK: ${card.atk}`;
+                if (card.def !== undefined) atkDef += ` / DEF: ${card.def}`;
+                modalCardAtkDef.textContent = atkDef || 'N/A';
+
+                // Set description
+                modalCardDescription.textContent = card.desc;
+
+                // Show the modal
+                cardModal.style.display = 'flex';
+            }
+
+            // Initialize app
+            checkAuthStatus();
+        });
+    </script>
+</body>
+
+</html>

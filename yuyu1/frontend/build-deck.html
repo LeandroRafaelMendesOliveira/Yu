@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construir Deck - Yu-Gi-Oh!</title>
+    <style>
+        :root {
+            --primary-blue: #1a237e;
+            --dark-blue: #0d1440;
+            --accent-gold: #ffd700;
+            --accent-red: #d32f2f;
+            --accent-green: #388e3c;
+            --light-bg: #f5f5f5;
+            --card-border: #8b6914;
+            --deck-bg: #2c3e50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            border-bottom: 3px solid var(--accent-gold);
+            margin-bottom: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .deck-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .deck-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+        }
+
+        .deck-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-gold);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-gold);
+            color: var(--dark-blue);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 150px);
+        }
+
+        /* Search Panel */
+        .search-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+        }
+
+        .filter-group select {
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .search-results {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .search-result-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            user-select: none;
+        }
+
+        .search-result-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-left-color: var(--accent-gold);
+        }
+
+        .search-result-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .card-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .card-type {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Deck Area */
+        .deck-area {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .deck-sections {
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .deck-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .deck-section.drag-over {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: var(--accent-gold);
+            border-style: solid;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .section-count {
+            background: var(--accent-gold);
+            color: var(--dark-blue);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            min-height: 100px;
+        }
+
+        .deck-card {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .deck-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.9);
+        }
+
+        .deck-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid var(--card-border);
+        }
+
+        .deck-card:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .card-quantity {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .remove-card {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .deck-card:hover .remove-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Card Preview */
+        .card-preview {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .preview-image {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .preview-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 3px solid var(--card-border);
+        }
+
+        .preview-details {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .preview-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+
+        .preview-type {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .preview-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .preview-description {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .preview-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Drag Ghost Image */
+        .drag-ghost {
+            opacity: 0.8;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        /* Empty States */
+        .empty-section {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid var(--accent-gold);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal h2 {
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 250px 1fr;
+            }
+            .card-preview {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            .search-panel {
+                order: 2;
+            }
+            .deck-area {
+                order: 1;
+            }
+            .card-preview {
+                order: 3;
+                display: block;
+            }
+        }
+
+        /* Animations */
+        @keyframes cardAdd {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .card-added {
+            animation: cardAdd 0.3s ease;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 4px;
+        }
+
+        /* Banlist indicators */
+        .ban-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .ban-forbidden {
+            background: #d32f2f;
+        }
+
+        .ban-limited {
+            background: #ff9800;
+        }
+
+        .ban-semi-limited {
+            background: #2196f3;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid var(--accent-gold);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Success Modal */
+        .success-modal .modal-content {
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+        }
+        
+        .success-icon {
+            font-size: 50px;
+            color: var(--accent-gold);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🃏 Construtor de Deck Yu-Gi-Oh!</h1>
+                </div>
+                <div class="deck-info">
+                    <div class="deck-name" id="deckName">Novo Deck</div>
+                    <div class="deck-stats">
+                        <div class="stat" id="mainCount">Principal: 0/40-60</div>
+                        <div class="stat" id="extraCount">Extra: 0/15</div>
+                        <div class="stat" id="sideCount">Side: 0/15</div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="saveDeck">Salvar Deck</button>
+                    <button class="btn btn-secondary" id="backButton">Voltar</button>
+                    <button class="btn btn-danger" id="clearDeck">Limpar Tudo</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-layout">
+            <!-- Search Panel -->
+            <aside class="search-panel">
+                <div class="search-box">
+                    <input type="text" id="cardSearch" placeholder="Buscar cartas...">
+                </div>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Tipo de Carta:</label>
+                        <select id="typeFilter">
+                            <option value="">Todos os Tipos</option>
+                            <option value="Normal Monster">Monstro Normal</option>
+                            <option value="Effect Monster">Monstro de Efeito</option>
+                            <option value="Spell Card">Magia</option>
+                            <option value="Trap Card">Armadilha</option>
+                            <option value="Fusion">Fusão</option>
+                            <option value="Synchro">Sincro</option>
+                            <option value="XYZ">XYZ</option>
+                            <option value="Link">Link</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Atributo:</label>
+                        <select id="attributeFilter">
+                            <option value="">Todos</option>
+                            <option value="DARK">Trevas</option>
+                            <option value="LIGHT">Luz</option>
+                            <option value="EARTH">Terra</option>
+                            <option value="WATER">Água</option>
+                            <option value="FIRE">Fogo</option>
+                            <option value="WIND">Vento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <div class="empty-section">Digite para buscar cartas</div>
+                </div>
+            </aside>
+
+            <!-- Deck Area -->
+            <main class="deck-area">
+                <div class="deck-sections">
+                    <!-- Main Deck -->
+                    <section class="deck-section" id="mainDeckSection" data-deck-type="main">
+                        <div class="section-header">
+                            <div class="section-title">Deck Principal (40-60)</div>
+                            <div class="section-count" id="mainDeckCount">0</div>
+                        </div>
+                        <div class="cards-grid" id="mainDeck">
+                            <div class="empty-section">Arraste cartas aqui ou clique em +</div>
+                        </div>
+                    </section>
+
+                    <!-- Extra Deck -->
+                    <section class="deck-section" id="extraDeckSection" data-deck-type="extra">
+                        <div class="section-header">
+                            <div class="section-title">Deck Extra (0-15)</div>
+                            <div class="section-count" id="extraDeckCount">0</div>
+                        </div>
+                        <div class="cards-grid" id="extraDeck">
+                            <div class="empty-section">Monstros Fusão, Sincro, XYZ</div>
+                        </div>
+                    </section>
+
+                    <!-- Side Deck -->
+                    <section class="deck-section" id="sideDeckSection" data-deck-type="side">
+                        <div class="section-header">
+                            <div class="section-title">Deck Side (0-15)</div>
+                            <div class="section-count" id="sideDeckCount">0</div>
+                        </div>
+                        <div class="cards-grid" id="sideDeck">
+                            <div class="empty-section">Cartas para substituição</div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            <!-- Card Preview -->
+            <aside class="card-preview">
+                <div class="preview-image">
+                    <img id="previewCardImage" src="https://images.ygoprodeck.com/images/cards/40044918.jpg" alt="Pré-visualização da Carta">
+                </div>
+                <div class="preview-details">
+                    <div class="preview-name" id="previewCardName">Dark Magician</div>
+                    <div class="preview-type" id="previewCardType">[Normal Monster/Spellcaster]</div>
+                    <div class="preview-stats">
+                        <div class="stat-item" id="previewCardAttribute">Atributo: DARK</div>
+                        <div class="stat-item" id="previewCardLevel">Nível: 7</div>
+                    </div>
+                    <div class="preview-description" id="previewCardDescription">
+                        O ultimate wizard in terms of attack and defense.
+                    </div>
+                    <div class="preview-actions">
+                        <button class="btn btn-primary" id="addToMain">+ Principal</button>
+                        <button class="btn btn-secondary" id="addToExtra">+ Extra</button>
+                        <button class="btn btn-secondary" id="addToSide">+ Side</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Save Modal -->
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <h2>Salvar Deck</h2>
+            <input type="text" id="deckNameInput" placeholder="Nome do Deck" style="width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px;">
+            <input type="text" id="deckDescriptionInput" placeholder="Descrição do Deck (opcional)" style="width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px;">
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="confirmSave">Salvar</button>
+                <button class="btn btn-secondary" id="cancelSave">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal" id="loadingModal">
+        <div class="modal-content">
+            <h2>Salvando Deck...</h2>
+            <div class="spinner"></div>
+            <p>Aguarde enquanto salvamos seu deck.</p>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal success-modal" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">✓</div>
+            <h2>Deck Salvo com Sucesso!</h2>
+            <p>Seu deck foi salvo no banco de dados.</p>
+            <p>Redirecionando para a biblioteca...</p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="goToLibrary">Ir para Biblioteca</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Element references
+            const cardSearch = document.getElementById('cardSearch');
+            const searchResults = document.getElementById('searchResults');
+            const mainDeck = document.getElementById('mainDeck');
+            const extraDeck = document.getElementById('extraDeck');
+            const sideDeck = document.getElementById('sideDeck');
+            const mainDeckSection = document.getElementById('mainDeckSection');
+            const extraDeckSection = document.getElementById('extraDeckSection');
+            const sideDeckSection = document.getElementById('sideDeckSection');
+            
+            const saveModal = document.getElementById('saveModal');
+            const loadingModal = document.getElementById('loadingModal');
+            const successModal = document.getElementById('successModal');
+            const deckNameInput = document.getElementById('deckNameInput');
+            const deckDescriptionInput = document.getElementById('deckDescriptionInput');
+            const confirmSave = document.getElementById('confirmSave');
+            const cancelSave = document.getElementById('cancelSave');
+            const saveDeckBtn = document.getElementById('saveDeck');
+            const backButton = document.getElementById('backButton');
+            const clearDeckBtn = document.getElementById('clearDeck');
+            const goToLibraryBtn = document.getElementById('goToLibrary');
+
+            // Preview elements
+            const previewCardImage = document.getElementById('previewCardImage');
+            const previewCardName = document.getElementById('previewCardName');
+            const previewCardType = document.getElementById('previewCardType');
+            const previewCardAttribute = document.getElementById('previewCardAttribute');
+            const previewCardLevel = document.getElementById('previewCardLevel');
+            const previewCardDescription = document.getElementById('previewCardDescription');
+            const addToMainBtn = document.getElementById('addToMain');
+            const addToExtraBtn = document.getElementById('addToExtra');
+            const addToSideBtn = document.getElementById('addToSide');
+            
+            // State
+            let currentDeck = {
+                name: 'Novo Deck',
+                description: '',
+                main: [],
+                extra: [],
+                side: []
+            };
+            let currentPreviewCard = null;
+            let searchTimeout = null;
+            let dragSource = null;
+
+            // Banlist example
+            const banlist = {
+                '33396948': 'forbidden', // Change of Heart
+                '83764718': 'forbidden', // Monster Reborn (old)
+                '46411259': 'forbidden', // Metamorphosis
+                '40044918': 'limited',   // Dark Magician
+                '46986421': 'limited',   // Dark Magician Girl
+                '53129443': 'limited',   // Dark Hole
+                '53582587': 'semi-limited', // Torrential Tribute
+                '83764719': 'semi-limited'  // Monster Reborn
+            };
+
+            // Initialize
+            initializeDeck();
+            setupDragAndDrop();
+            checkUserAuth();
+
+            // Check if user is authenticated
+            function checkUserAuth() {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (!user) {
+                    alert('Você precisa estar logado para usar o construtor de decks!');
+                    window.location.href = 'login.html';
+                }
+            }
+
+            // Initialize from URL parameters
+            function initializeDeck() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const deckId = urlParams.get('deck');
+                
+                if (deckId) {
+                    loadDeck(deckId);
+                } else {
+                    currentDeck = {
+                        name: 'Novo Deck',
+                        description: '',
+                        main: [],
+                        extra: [],
+                        side: []
+                    };
+                    updateDeckCounts();
+                }
+            }
+
+            // Load deck from localStorage
+            function loadDeck(deckId) {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (!user) {
+                    console.log('Usuário não logado');
+                    return;
+                }
+
+                const userDecks = JSON.parse(localStorage.getItem(`decks_${user.id}`)) || [];
+                const deck = userDecks.find(d => d.id === deckId);
+                
+                if (deck) {
+                    currentDeck = {
+                        name: deck.name || 'Deck Sem Nome',
+                        description: deck.description || '',
+                        id: deck.id,
+                        main: Array.isArray(deck.main) ? deck.main : [],
+                        extra: Array.isArray(deck.extra) ? deck.extra : [],
+                        side: Array.isArray(deck.side) ? deck.side : []
+                    };
+                    document.getElementById('deckName').textContent = currentDeck.name;
+                    renderDeck();
+                }
+            }
+
+            // Setup drag and drop system
+            function setupDragAndDrop() {
+                // Search results drag
+                searchResults.addEventListener('dragstart', handleDragStart);
+                
+                // Deck sections as drop targets
+                const deckSections = [mainDeckSection, extraDeckSection, sideDeckSection];
+                deckSections.forEach(section => {
+                    section.addEventListener('dragover', handleDragOver);
+                    section.addEventListener('dragenter', handleDragEnter);
+                    section.addEventListener('dragleave', handleDragLeave);
+                    section.addEventListener('drop', handleDrop);
+                });
+
+                // Deck cards drag
+                document.addEventListener('dragstart', function(e) {
+                    const deckCard = e.target.closest('.deck-card');
+                    if (deckCard) {
+                        const cardId = deckCard.getAttribute('data-card-id');
+                        const deckType = deckCard.closest('.deck-section').dataset.deckType;
+                        const card = currentDeck[deckType].find(c => c.id == cardId);
+                        
+                        if (card) {
+                            dragSource = {
+                                type: 'deck',
+                                card: card,
+                                deckType: deckType,
+                                element: deckCard
+                            };
+                            deckCard.classList.add('dragging');
+                        }
+                    }
+                });
+
+                document.addEventListener('dragend', function(e) {
+                    document.querySelectorAll('.dragging').forEach(el => {
+                        el.classList.remove('dragging');
+                    });
+                    dragSource = null;
+                });
+
+                // Prevent default drag behaviors
+                document.addEventListener('dragover', e => e.preventDefault());
+                document.addEventListener('drop', e => e.preventDefault());
+            }
+
+            // Drag from search results
+            function handleDragStart(e) {
+                const resultCard = e.target.closest('.search-result-card');
+                if (!resultCard) return;
+
+                const cardData = resultCard.cardData;
+                if (cardData) {
+                    dragSource = {
+                        type: 'search',
+                        card: cardData
+                    };
+                    
+                    resultCard.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', cardData.id);
+                }
+            }
+
+            // Drag over deck section
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+            }
+
+            function handleDragEnter(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('drag-over');
+            }
+
+            function handleDragLeave(e) {
+                e.currentTarget.classList.remove('drag-over');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('drag-over');
+                
+                if (!dragSource) return;
+
+                const deckType = e.currentTarget.dataset.deckType;
+                addCardToDeck(deckType, dragSource.card);
+                dragSource = null;
+            }
+
+            // Render deck cards
+            function renderDeck() {
+                renderDeckSection(mainDeck, currentDeck.main, 'main');
+                renderDeckSection(extraDeck, currentDeck.extra, 'extra');
+                renderDeckSection(sideDeck, currentDeck.side, 'side');
+                updateDeckCounts();
+            }
+
+            function renderDeckSection(container, cards, deckType) {
+                container.innerHTML = '';
+                
+                if (!cards || cards.length === 0) {
+                    container.innerHTML = '<div class="empty-section">Arraste cartas aqui ou clique em +</div>';
+                    return;
+                }
+
+                // Group cards by ID and count quantities
+                const cardCounts = {};
+                cards.forEach(card => {
+                    if (card && card.id) {
+                        cardCounts[card.id] = (cardCounts[card.id] || 0) + 1;
+                    }
+                });
+
+                // Create unique card elements with quantities
+                Object.keys(cardCounts).forEach(cardId => {
+                    const card = cards.find(c => c && c.id == cardId);
+                    if (!card) return;
+                    
+                    const quantity = cardCounts[cardId];
+                    const cardElement = createDeckCardElement(card, quantity, deckType);
+                    container.appendChild(cardElement);
+                });
+            }
+
+            function createDeckCardElement(card, quantity, deckType) {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'deck-card';
+                cardDiv.draggable = true;
+                cardDiv.setAttribute('data-card-id', card.id);
+                
+                const banStatus = banlist[card.id];
+                let banIndicator = '';
+                if (banStatus === 'forbidden') {
+                    banIndicator = '<div class="ban-indicator ban-forbidden">0</div>';
+                } else if (banStatus === 'limited') {
+                    banIndicator = '<div class="ban-indicator ban-limited">1</div>';
+                } else if (banStatus === 'semi-limited') {
+                    banIndicator = '<div class="ban-indicator ban-semi-limited">2</div>';
+                }
+
+                cardDiv.innerHTML = `
+                    <img src="${card.card_images[0].image_url_small || card.card_images[0].image_url}" alt="${card.name}">
+                    <button class="remove-card" title="Remover carta">×</button>
+                    ${quantity > 1 ? `<div class="card-quantity">${quantity}</div>` : ''}
+                    ${banIndicator}
+                `;
+
+                // Click to preview
+                cardDiv.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('remove-card')) {
+                        showCardPreview(card);
+                    }
+                });
+
+                // Remove card
+                const removeBtn = cardDiv.querySelector('.remove-card');
+                removeBtn.addEventListener('click', () => {
+                    removeCardFromDeck(deckType, card.id);
+                });
+
+                return cardDiv;
+            }
+
+            // Search functionality usando fetch da API
+            cardSearch.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 500);
+            });
+
+            async function performSearch() {
+                const query = cardSearch.value.trim();
+                if (!query) {
+                    searchResults.innerHTML = '<div class="empty-section">Digite para buscar cartas</div>';
+                    return;
+                }
+
+                searchResults.innerHTML = '<div class="empty-section">Buscando...</div>';
+
+                try {
+                    const response = await fetch(`http://localhost:3000/cards/name/${encodeURIComponent(query)}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Erro na busca');
+                    }
+                    
+                    const cards = await response.json();
+                    displaySearchResults(cards);
+                } catch (error) {
+                    console.error('Erro na busca:', error);
+                    searchResults.innerHTML = '<div class="empty-section">Erro ao buscar cartas</div>';
+                }
+            }
+
+            function displaySearchResults(cards) {
+                searchResults.innerHTML = '';
+
+                if (!cards || cards.length === 0) {
+                    searchResults.innerHTML = '<div class="empty-section">Nenhuma carta encontrada</div>';
+                    return;
+                }
+
+                cards.slice(0, 20).forEach(card => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'search-result-card';
+                    resultDiv.draggable = true;
+                    resultDiv.cardData = card;
+                    
+                    const banStatus = banlist[card.id];
+                    let banText = '';
+                    if (banStatus === 'forbidden') banText = ' [PROIBIDA]';
+                    else if (banStatus === 'limited') banText = ' [LIMITADA]';
+                    else if (banStatus === 'semi-limited') banText = ' [SEMI-LIMITADA]';
+
+                    resultDiv.innerHTML = `
+                        <div class="card-name">${card.name}${banText}</div>
+                        <div class="card-type">${card.type} - ${card.race || ''}</div>
+                    `;
+
+                    resultDiv.addEventListener('click', () => {
+                        showCardPreview(card);
+                        if (window.innerWidth <= 768) {
+                            document.querySelector('.card-preview').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+
+                    searchResults.appendChild(resultDiv);
+                });
+            }
+
+            // Card preview
+            function showCardPreview(card) {
+                currentPreviewCard = card;
+                
+                previewCardImage.src = card.card_images[0].image_url;
+                previewCardName.textContent = card.name;
+                previewCardType.textContent = card.type;
+                previewCardAttribute.textContent = `Atributo: ${card.attribute || 'N/A'}`;
+                previewCardLevel.textContent = `Nível: ${card.level || card.rank || 'N/A'}`;
+                previewCardDescription.textContent = card.desc;
+
+                // Show/hide add buttons based on card type
+                const isExtraDeckCard = ['Fusion', 'Synchro', 'XYZ', 'Link', 'Pendulum'].some(type => 
+                    card.type.includes(type)
+                );
+
+                addToMainBtn.style.display = !isExtraDeckCard ? 'block' : 'none';
+                addToExtraBtn.style.display = isExtraDeckCard ? 'block' : 'none';
+            }
+
+            // Add card to deck with validation
+            function addCardToDeck(deckType, card) {
+                if (!card) return;
+
+                // Validate card can go in this deck
+                const isExtraDeckCard = ['Fusion', 'Synchro', 'XYZ', 'Link', 'Pendulum'].some(type => 
+                    card.type.includes(type)
+                );
+
+                if (deckType === 'main' && isExtraDeckCard) {
+                    alert('Cartas do Deck Extra não podem ser adicionadas ao Deck Principal!');
+                    return;
+                }
+
+                if (deckType === 'extra' && !isExtraDeckCard) {
+                    alert('Apenas cartas do Deck Extra podem ser adicionadas aqui!');
+                    return;
+                }
+
+                const deck = currentDeck[deckType];
+                
+                // Check deck limits
+                const deckLimits = {
+                    main: 60,
+                    extra: 15,
+                    side: 15
+                };
+                
+                if (deck.length >= deckLimits[deckType]) {
+                    alert(`Deck ${deckType} atingiu o limite máximo de ${deckLimits[deckType]} cartas!`);
+                    return;
+                }
+
+                // Check banlist restrictions
+                const banStatus = banlist[card.id];
+                const cardCount = deck.filter(deckCard => deckCard.id === card.id).length;
+                
+                if (banStatus === 'forbidden') {
+                    alert('Esta carta está proibida e não pode ser adicionada ao deck!');
+                    return;
+                }
+
+                if (banStatus === 'limited' && cardCount >= 1) {
+                    alert('Esta carta é limitada - você só pode ter 1 cópia no deck!');
+                    return;
+                }
+
+                if (banStatus === 'semi-limited' && cardCount >= 2) {
+                    alert('Esta carta é semi-limitada - você só pode ter 2 cópias no deck!');
+                    return;
+                }
+
+                // Check regular limit (max 3 copies)
+                if (cardCount >= 3) {
+                    alert('Você já tem 3 cópias desta carta no deck!');
+                    return;
+                }
+
+                deck.push(card);
+                renderDeck();
+                
+                // Show animation feedback
+                const deckElement = document.getElementById(`${deckType}Deck`);
+                const addedCard = deckElement.querySelector('.deck-card:last-child');
+                if (addedCard) {
+                    addedCard.classList.add('card-added');
+                    setTimeout(() => addedCard.classList.remove('card-added'), 300);
+                }
+            }
+
+            // Remove card from deck
+            function removeCardFromDeck(deckType, cardId) {
+                const deck = currentDeck[deckType];
+                const cardIndex = deck.findIndex(card => card.id === cardId);
+                
+                if (cardIndex !== -1) {
+                    deck.splice(cardIndex, 1);
+                    renderDeck();
+                }
+            }
+
+            // Clear entire deck
+            function clearDeck() {
+                if (confirm('Tem certeza que deseja limpar todo o deck?')) {
+                    currentDeck.main = [];
+                    currentDeck.extra = [];
+                    currentDeck.side = [];
+                    renderDeck();
+                }
+            }
+
+            // Update deck counts
+            function updateDeckCounts() {
+                document.getElementById('mainDeckCount').textContent = currentDeck.main.length;
+                document.getElementById('extraDeckCount').textContent = currentDeck.extra.length;
+                document.getElementById('sideDeckCount').textContent = currentDeck.side.length;
+
+                document.getElementById('mainCount').textContent = `Principal: ${currentDeck.main.length}/40-60`;
+                document.getElementById('extraCount').textContent = `Extra: ${currentDeck.extra.length}/15`;
+                document.getElementById('sideCount').textContent = `Side: ${currentDeck.side.length}/15`;
+            }
+
+            // Save deck
+            function saveDeck() {
+                if (currentDeck.main.length < 40) {
+                    alert('O deck principal precisa ter pelo menos 40 cartas!');
+                    return;
+                }
+
+                saveModal.style.display = 'flex';
+                deckNameInput.value = currentDeck.name;
+                deckDescriptionInput.value = currentDeck.description;
+                deckNameInput.focus();
+            }
+
+            function confirmSaveDeck() {
+                const deckName = deckNameInput.value.trim();
+                if (!deckName) {
+                    alert('Por favor, digite um nome para o deck!');
+                    return;
+                }
+
+                currentDeck.name = deckName;
+                currentDeck.description = deckDescriptionInput.value.trim();
+                
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (!user) {
+                    alert('Você precisa estar logado para salvar decks!');
+                    saveModal.style.display = 'none';
+                    return;
+                }
+
+                // Verificar se há cartas no deck
+                if (currentDeck.main.length === 0 && currentDeck.extra.length === 0 && currentDeck.side.length === 0) {
+                    alert('O deck está vazio! Adicione cartas antes de salvar.');
+                    return;
+                }
+
+                // Validar tamanho mínimo do deck principal
+                if (currentDeck.main.length < 40) {
+                    alert('O deck principal precisa ter pelo menos 40 cartas!');
+                    return;
+                }
+
+                // Save to localStorage first
+                const userDecks = JSON.parse(localStorage.getItem(`decks_${user.id}`)) || [];
+                
+                // Update existing deck or create new
+                const existingIndex = userDecks.findIndex(deck => deck.id === currentDeck.id);
+                if (existingIndex !== -1) {
+                    userDecks[existingIndex] = currentDeck;
+                } else {
+                    currentDeck.id = Date.now().toString();
+                    userDecks.push(currentDeck);
+                }
+
+                try {
+                    localStorage.setItem(`decks_${user.id}`, JSON.stringify(userDecks));
+                    document.getElementById('deckName').textContent = deckName;
+                    
+                    // Now save to server
+                    saveModal.style.display = 'none';
+                    saveToServer();
+                } catch (storageError) {
+                    console.error('Erro ao salvar no localStorage:', storageError);
+                    saveModal.style.display = 'none';
+                    alert('Erro ao salvar localmente: ' + storageError.message);
+                }
+            }
+
+            async function saveToServer() {
+                // Show loading modal
+                loadingModal.style.display = 'flex';
+                
+                try {
+                    const user = JSON.parse(localStorage.getItem('currentUser'));
+                    if (!user || !user.id) {
+                        throw new Error('Usuário não autenticado');
+                    }
+
+                    // Get JWT token from localStorage
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        throw new Error('Token de autenticação não encontrado');
+                    }
+
+                    // Função para contar cartas corrigida
+                    const countCards = (cards) => {
+                        if (!cards || !Array.isArray(cards)) return [];
+                        
+                        const counts = {};
+                        cards.forEach(card => {
+                            if (card && card.id) {
+                                counts[card.id] = (counts[card.id] || 0) + 1;
+                            }
+                        });
+                        
+                        return Object.entries(counts).map(([cardId, quantity]) => ({
+                            card_id: parseInt(cardId),
+                            quantity: quantity
+                        }));
+                    };
+
+                    // Verificar se há cartas antes de processar
+                    const mainCards = countCards(currentDeck.main);
+                    const extraCards = countCards(currentDeck.extra);
+                    const sideCards = countCards(currentDeck.side);
+
+                    // Preparar dados para enviar
+                    const deckData = {
+                        name: currentDeck.name,
+                        description: currentDeck.description || '',
+                        user_id: user.id,
+                         featured_card_id: card.card_images[0].image_url_small || card.card_images[0].image_url,   
+                        deck_cards: []
+                    };
+                 
+
+                    // Adicionar cartas do deck principal
+                    mainCards.forEach(card => {
+                        deckData.deck_cards.push({
+                            card_id: card.card_id,
+                            quantity: card.quantity,
+                            deck_type: 'main'
+                        });
+                    });
+
+                    // Adicionar cartas do deck extra
+                    extraCards.forEach(card => {
+                        deckData.deck_cards.push({
+                            card_id: card.card_id,
+                            quantity: card.quantity,
+                            deck_type: 'extra'
+                        });
+                    });
+
+                    // Adicionar cartas do side deck
+                    sideCards.forEach(card => {
+                        deckData.deck_cards.push({
+                            card_id: card.card_id,
+                            quantity: card.quantity,
+                            deck_type: 'side'
+                        });
+                    });
+
+                    console.log('Enviando deck para servidor:', deckData);
+
+                    const response = await fetch('http://localhost:3000/decks/save', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(deckData)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Erro do servidor:', errorText);
+                        let errorMessage = `Erro ${response.status}: ${response.statusText}`;
+                        
+                        try {
+                            const errorData = JSON.parse(errorText);
+                            errorMessage = errorData.message || errorMessage;
+                        } catch (e) {
+                            // Se não for JSON, usar o texto como está
+                        }
+                        
+                        throw new Error(errorMessage);
+                    }
+
+                    // Se chegou aqui, salvou com sucesso
+                    console.log('Deck salvo no servidor com sucesso');
+                    
+                    // Limpar o deck do localStorage após salvar no servidor
+                    localStorage.removeItem(`decks_${user.id}`);
+                    
+                    // Fechar o modal de loading
+                    loadingModal.style.display = 'none';
+                    
+                    // Mostrar modal de sucesso
+                    successModal.style.display = 'flex';
+                    
+                    // Redirecionar automaticamente após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'Library.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Erro ao salvar o deck:', error);
+                    
+                    // Fechar modais em caso de erro
+                    loadingModal.style.display = 'none';
+                    
+                    // Mostrar alerta de erro
+                    alert('Erro ao salvar o deck: ' + error.message);
+                    
+                    // Verificar se o erro é de autenticação
+                    if (error.message.includes('autenticação') || error.message.includes('token')) {
+                        // Limpar dados de autenticação
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('currentUser');
+                        
+                        // Redirecionar para login
+                        window.location.href = 'login.html';
+                    }
+                }
+            }
+
+            // Event listeners
+            addToMainBtn.addEventListener('click', () => addCardToDeck('main', currentPreviewCard));
+            addToExtraBtn.addEventListener('click', () => addCardToDeck('extra', currentPreviewCard));
+            addToSideBtn.addEventListener('click', () => addCardToDeck('side', currentPreviewCard));
+
+            saveDeckBtn.addEventListener('click', saveDeck);
+            confirmSave.addEventListener('click', confirmSaveDeck);
+            cancelSave.addEventListener('click', () => saveModal.style.display = 'none');
+            backButton.addEventListener('click', () => window.location.href = 'Library.html');
+            clearDeckBtn.addEventListener('click', clearDeck);
+            goToLibraryBtn.addEventListener('click', () => {
+                successModal.style.display = 'none';
+                window.location.href = 'Library.html';
+            });
+
+            // Close modal on background click
+            saveModal.addEventListener('click', (e) => {
+                if (e.target === saveModal) {
+                    saveModal.style.display = 'none';
+                }
+            });
+            
+            loadingModal.addEventListener('click', (e) => {
+                if (e.target === loadingModal) {
+                    loadingModal.style.display = 'none';
+                }
+            });
+            
+            successModal.addEventListener('click', (e) => {
+                if (e.target === successModal) {
+                    successModal.style.display = 'none';
+                }
+            });
+
+            // Auto-search for demo
+            setTimeout(() => {
+                if (cardSearch.value === '') {
+                    cardSearch.value = 'dark magician';
+                    performSearch();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
