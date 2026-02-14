@@ -92,7 +92,7 @@ class CardService {
           
 
         }));
-        console.log("deckserviceconso",deckCardsData);
+        console.log("deckserviceconsole",deckCardsData);
 
         await DeckCard.bulkCreate(deckCardsData);
       }

@@ -5,7 +5,7 @@ const sessaoService = require('../services/sessaoService');
 const deckController = {
   async createDeck(req, res) {
     try {
-      const deckCard = req.body.deck_cards[0];
+      const deckCard = req.body.deck_cards;
       console.log("deckCard chegou:",deckCard);
 
       const auxToken = req.headers['authorization'];
